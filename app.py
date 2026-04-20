@@ -116,7 +116,7 @@ if st.session_state.get("role") is None:
     # Aggressive Cleanup for the Login/Register Page (No sidebar needed)
     st.markdown("""
         <style>
-        header[data-testid="stHeader"], [data-testid="stToolbar"], footer {
+        header[data-testid="stHeader"], [data-testid="stToolbar"],.stToolbarActionButton, footer {
             display: none !important;
         }
         .block-container {
@@ -129,7 +129,7 @@ elif st.session_state.get("role") == "student":
     st.markdown("""
         <style>
         /* Hide Deploy Button */
-        .stDeployButton, [data-testid="stCloudAppDeployButton"] {
+        .stDeployButton,.stToolbarActionButton, [data-testid="stCloudAppDeployButton"] {
             display: none !important;
         }
         
