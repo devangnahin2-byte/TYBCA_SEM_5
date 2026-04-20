@@ -115,9 +115,8 @@ if "theme_color" not in st.session_state:
 if st.session_state.get("role") in [None, "student"]:
     st.markdown("""
         <style>
-        /* Hide Header, Toolbar, and Footer */
-        header[data-testid="stHeader"], 
-        [data-testid="stHeader"], 
+        /* Hide Unwanted UI Elements */
+        [data-testid="stCloudAppDeployButton"], 
         [data-testid="stToolbar"], 
         .stAppToolbar,
         footer,
@@ -127,9 +126,23 @@ if st.session_state.get("role") in [None, "student"]:
             height: 0 !important;
             opacity: 0 !important;
         }
-        /* Remove top padding caused by header */
+
+        /* Keep header container but make it transparent for the toggle */
+        header[data-testid="stHeader"] {
+            background-color: rgba(0, 0, 0, 0) !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Ensure Sidebar Toggle is visible and clean */
+        [data-testid="stSidebarCollapseButton"] {
+            color: #1e293b !important;
+            margin-top: 5px !important;
+        }
+
+        /* Fine-tune block container padding */
         .block-container {
-            padding-top: 2rem !important;
+            padding-top: 1.5rem !important;
         }
         </style>
     """, unsafe_allow_html=True)
