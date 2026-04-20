@@ -343,6 +343,7 @@ def login():
         /* Sidebar Color Tweaks */
         [data-testid="stSidebar"] {{
              background-color: #ffffff !important;
+             box-sadow:none !important;
         }}
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
             color: #1e293b !important;
