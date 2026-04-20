@@ -90,7 +90,7 @@ def send_otp_email(recipient_email, otp_code):
     if SMTP_EMAIL == "your_email@gmail.com":
          return False, "SMTP completely unconfigured. Please open app.py and insert your email/password."
          
-    msg = MIMEText(f"Hello Future CA Student,\n\nYour TYBCA AI Syllabus Authentication OTP is: {otp_code}\n\nDo not share this code. Input it into the Streamlit Portal to officially verify your student account!")
+    msg = MIMEText(f"Hello Future AI Student,\n\nYour TYBCA AI Syllabus Authentication OTP is: {otp_code}\n\nDo not share this code. Input it into the Streamlit Portal to officially verify your student account!")
     msg['Subject'] = 'TYBCA AI Syllabus - Registration OTP'
     msg['From'] = SMTP_EMAIL
     msg['To'] = recipient_email
@@ -112,19 +112,23 @@ if "theme_color" not in st.session_state:
     st.session_state["theme_color"] = "#2563eb"
 
 # --- Global UI Cleanup ---
-if st.session_state.get("role") is None:
+if st.session_state.get("role") is "student":
     # Aggressive Cleanup for the Login/Register Page (No sidebar needed)
     st.markdown("""
         <style>
         header[data-testid="stHeader"], [data-testid="stToolbar"], footer {
             display: none !important;
         }
+        header[data-testid="stExpandSidebarButton"]
+        {
+            display: block !important;
+        }
         .block-container {
             padding-top: 0 !important;
         }
         </style>
     """, unsafe_allow_html=True)
-elif st.session_state.get("role") == "student":
+elif st.session_state.get("role") == "admin":
     # Surgical Cleanup for Student Dashboard (Preserve sidebar toggle)
     st.markdown("""
         <style>
