@@ -112,37 +112,36 @@ if "theme_color" not in st.session_state:
     st.session_state["theme_color"] = "#2563eb"
 
 # --- Global UI Cleanup ---
-if st.session_state.get("role") in [None, "student"]:
+if st.session_state.get("role") is None:
+    # Aggressive Cleanup for the Login/Register Page (No sidebar needed)
     st.markdown("""
         <style>
-        /* Hide Unwanted UI Elements */
-        [data-testid="stCloudAppDeployButton"], 
-        [data-testid="stToolbar"], 
-        .stAppToolbar,
-        footer,
-        #MainMenu {
+        header[data-testid="stHeader"], [data-testid="stToolbar"], footer {
             display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            opacity: 0 !important;
         }
-
-        /* Keep header container but make it transparent for the toggle */
-        header[data-testid="stHeader"] {
-            background-color: rgba(0, 0, 0, 0) !important;
-            border-bottom: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Ensure Sidebar Toggle is visible and clean */
-        [data-testid="stSidebarCollapseButton"] {
-            color: #1e293b !important;
-            margin-top: 5px !important;
-        }
-
-        /* Fine-tune block container padding */
         .block-container {
-            padding-top: 1.5rem !important;
+            padding-top: 0 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+elif st.session_state.get("role") == "student":
+    # Surgical Cleanup for Student Dashboard (Preserve sidebar toggle)
+    st.markdown("""
+        <style>
+        [data-testid="stCloudAppDeployButton"], 
+        .stDeployButton,
+        [data-testid="stToolbar"],
+        footer {
+            display: none !important;
+        }
+        /* Ensure Header is visible but clean for the sidebar toggle */
+        header[data-testid="stHeader"] {
+            visibility: visible !important;
+            background-color: transparent !important;
+        }
+        [data-testid="stSidebarCollapseButton"] {
+            visibility: visible !important;
+            color: #1e293b !important;
         }
         </style>
     """, unsafe_allow_html=True)
