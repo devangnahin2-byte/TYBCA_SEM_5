@@ -475,10 +475,26 @@ else:
             ]
         }
         
-    # Management Section (Accessible to all roles, features restricted within the page)
-    manage_page = {"Manage App": [st.Page("admin_dashboard.py", title="App Settings", icon="⚙️")]}
-    pages = {**manage_page, **pages}
+    # Management Section (Restricted to Admin/Faculty)
+    if st.session_state["role"] in ["admin", "faculty"]:
+        manage_page = {"Manage App": [st.Page("admin_dashboard.py", title="App Settings", icon="⚙️")]}
+        pages = {**manage_page, **pages}
         
     pg = st.navigation(pages)
+
+    # Hide 'Live' toolbar and header for students for a cleaner UI
+    if st.session_state.get("role") == "student":
+        st.markdown("""
+            <style>
+            [data-testid="stToolbar"], [data-testid="stHeader"] {
+                display: none !important;
+                visibility: hidden;
+                height: 0;
+            }
+            footer {
+                display: none !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
 pg.run()
