@@ -156,7 +156,6 @@ elif st.session_state.get("role") == "student":
             background-color: #2563eb !important
             border-radius: 8px !important;
             padding: 8px !important;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
             transition: all 0.3s ease;
         }
         
