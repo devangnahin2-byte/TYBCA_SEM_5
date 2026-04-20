@@ -119,9 +119,9 @@ if st.session_state.get("role") is "student":
         header[data-testid="stHeader"], [data-testid="stToolbar"], footer {
             display: none !important;
         }
-        .stToolbarActions
+        header[data-testid="stToolbarActions"]
         {
-            display: none !important;
+            display: none!important;
         }
         .block-container {
             padding-top: 0 !important;
