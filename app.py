@@ -128,8 +128,8 @@ elif st.session_state.get("role") == "student":
     # Surgical Cleanup for Student Dashboard (Preserve sidebar toggle)
     st.markdown("""
         <style>
-        /* Hide Deploy Button and Toolbar Menu */
-        .stDeployButton, [data-testid="stCloudAppDeployButton"], [data-testid="stToolbar"] {
+        /* Hide Deploy Button */
+        .stDeployButton, [data-testid="stCloudAppDeployButton"] {
             display: none !important;
         }
         
@@ -138,7 +138,7 @@ elif st.session_state.get("role") == "student":
             display: none !important;
         }
         
-        /* Keep header visible for the hamburger, but make it transparent */
+        /* Keep header visible for the hamburger and menu */
         header[data-testid="stHeader"] {
             background: transparent !important;
             box-shadow: none !important;
