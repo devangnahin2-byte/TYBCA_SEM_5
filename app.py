@@ -27,14 +27,21 @@ def init_auth_db():
             username TEXT PRIMARY KEY,
             password TEXT NOT NULL,
             role TEXT NOT NULL,
-            email TEXT UNIQUE
+            email TEXT UNIQUE,
+            theme_color TEXT DEFAULT '#2563eb'
         )
     ''')
+    # Migration: Add theme_color if not exists
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN theme_color TEXT DEFAULT '#2563eb'")
+    except sqlite3.OperationalError:
+        pass
+
     # Default admin
     cursor.execute("SELECT * FROM users WHERE username='admin'")
     if not cursor.fetchone():
         hashed_pw = hashlib.sha256("admin".encode()).hexdigest()
-        cursor.execute("INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)", ("admin", hashed_pw, "admin", "admin@localhost.com"))
+        cursor.execute("INSERT INTO users (username, password, role, email, theme_color) VALUES (?, ?, ?, ?, ?)", ("admin", hashed_pw, "admin", "admin@localhost.com", "#2563eb"))
     conn.commit()
     conn.close()
 
@@ -44,10 +51,10 @@ def authenticate(identifier, password):
     conn = sqlite3.connect("auth.db")
     cursor = conn.cursor()
     hashed_pw = hashlib.sha256(password.encode()).hexdigest()
-    cursor.execute("SELECT role FROM users WHERE (username=? OR email=?) AND password=?", (identifier, identifier, hashed_pw))
+    cursor.execute("SELECT username, role, theme_color FROM users WHERE (username=? OR email=?) AND password=?", (identifier, identifier, hashed_pw))
     user = cursor.fetchone()
     conn.close()
-    return user[0] if user else None
+    return user if user else None
 
 def check_username_exists(username):
     conn = sqlite3.connect("auth.db")
@@ -71,7 +78,7 @@ def register_user(username, password, email):
     hashed_pw = hashlib.sha256(password.encode()).hexdigest()
     success = False
     try:
-        cursor.execute("INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)", (username, hashed_pw, "student", email))
+        cursor.execute("INSERT INTO users (username, password, role, email, theme_color) VALUES (?, ?, ?, ?, ?)", (username, hashed_pw, "student", email, "#2563eb"))
         conn.commit()
         success = True
     except sqlite3.IntegrityError:
@@ -101,6 +108,9 @@ def send_otp_email(recipient_email, otp_code):
 if "role" not in st.session_state:
     st.session_state["role"] = None
 
+if "theme_color" not in st.session_state:
+    st.session_state["theme_color"] = "#2563eb"
+
 if "otp_state" not in st.session_state:
     st.session_state.otp_state = {
         "step": 1,
@@ -112,30 +122,31 @@ if "otp_state" not in st.session_state:
 
 # --- UI Components ---
 def login():
+    theme_c = st.session_state.get("theme_color", "#2563eb")
     st.markdown(
-        """
+        f"""
         <style>
         /* Elegant Off-White Light Gradient Background */
-        [data-testid="stAppViewContainer"] {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        [data-testid="stAppViewContainer"] {{
+            background: linear-gradient(135deg, #f8fafc 0%, {theme_c}15 50%, #f1f5f9 100%);
             color: #0f172a;
-        }
+        }}
         
         /* Restrict overall container max-width for perfect centering (bypasses mobile stacking) */
         [data-testid="block-container"],
         [data-testid="stMainBlockContainer"],
         .st-emotion-cache-1jicfl2,
-        .stMainBlockContainer {
+        .stMainBlockContainer {{
             max-width: 100% !important;
             padding-top: 5rem;
             padding-bottom: 5rem;
-        }
+        }}
 
         /* Unified Glassmorphism Card for Auth */
         div[data-testid="stVerticalBlock"] > div:has(.st-key-auth_card) > div,
-        .st-key-auth_card {
+        .st-key-auth_card {{
             display: flex;
-    align-items: center;
+            align-items: center;
             max-width: 500px !important;
             margin: 0 auto !important;
             background: rgba(255, 255, 255, 0.45) !important;
@@ -146,28 +157,28 @@ def login():
             border-radius: 20px !important;
             padding: 2.5rem !important;
             animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        }}
 
         /* Make the inner form and radio transparent since the parent card has the glass effect */
-        [data-testid="stForm"], [data-testid="stRadio"] {
+        [data-testid="stForm"], [data-testid="stRadio"] {{
             background: transparent !important;
             border: none !important;
             padding: 0 !important;
             box-shadow: none !important;
             max-width: 100% !important;
-        }
+        }}
         
         /* Premium iOS-style Segmented Toggle wrapper */
-        [data-testid="stRadio"] {
+        [data-testid="stRadio"] {{
             width: 100% !important;
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
             margin: 0 auto 1.5rem auto !important;
-        }
+        }}
 
         /* Inner container formatting */
-        [data-testid="stRadio"] > div {
+        [data-testid="stRadio"] > div {{
             display: flex !important;
             flex-direction: row;
             justify-content: center !important;
@@ -180,93 +191,100 @@ def login():
             margin-bottom: -15px !important; /* pulls the toggle tighter down towards the form */
             position: relative;
             z-index: 10;
-        }
+        }}
 
         /* Target individual navigation option boundaries */
-        [data-baseweb="radio"] {
+        [data-baseweb="radio"] {{
             background: rgba(255, 255, 255, 0.7) !important;
             padding: 10px 40px !important;
             border-radius: 40px !important;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* subtle pill shadow */
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             margin: 0 !important;
-        }
+        }}
 
-        [data-baseweb="radio"]:hover {
+        [data-baseweb="radio"]:hover {{
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 6px 20px {theme_c}33;
             background: #ffffff !important;
-        }
+        }}
 
         /* Exterminate native Streamlit/Browser radio-selection circles! */
-        [data-baseweb="radio"] > div:first-child {
+        [data-baseweb="radio"] > div:first-child {{
             display: none !important;
-        }
+        }}
 
         /* Enforce bold typography inside the pills */
-        [data-baseweb="radio"] p, [data-baseweb="radio"] div {
+        [data-baseweb="radio"] p, [data-baseweb="radio"] div {{
             font-weight: 700 !important;
             font-size: 1.05rem !important;
             color: #1e293b !important;
             margin: 0 !important;
             padding: 0 !important;
-        }
+        }}
 
         /* Force all Text Elements to Dark Slate over the Light Background */
         [data-testid="block-container"] p,
         [data-testid="block-container"] span,
-        [data-testid="block-container"] label {
+        [data-testid="block-container"] label {{
             color: #1e293b !important;
-        }
+        }}
 
          /* Fix Streamlit Input boxes under Light Theme */
-        input[type="password"], input[type="text"] {
+        input[type="password"], input[type="text"] {{
             background-color: rgba(255, 255, 255, 0.8) !important;
             color: #0f172a !important;
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
-        }
+        }}
 
         /* Animate Header */
-        h1, h2, h3 {
+        h1, h2, h3 {{
             width: 100% !important;
             text-align: center !important;
             color: #0f172a !important;
             animation: fadeUp 0.6s ease-out forwards;
-        }
+        }}
 
         /* Premium Button Hover Effects */
-        .stButton>button {
+        .stButton>button {{
             transition: all 0.3s ease;
-            background: #2563eb !important; /* solid blue fallback */
-            background-color: #2563eb !important;
+            background: {theme_c} !important;
+            background-color: {theme_c} !important;
             border: none !important;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 15px {theme_c}66;
             border-radius: 8px;
-        }
+        }}
 
-        .stButton>button p {
+        .stButton>button p {{
             color: white !important;
             font-weight: 600;
-        }
+        }}
 
-        .stButton>button:hover {
+        .stButton>button:hover {{
             transform: translateY(-2px);
-            background: #1d4ed8 !important;
-            background-color: #1d4ed8 !important;
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
-        }
+            opacity: 0.9;
+            box-shadow: 0 6px 20px {theme_c}88;
+        }}
 
         /* Keyframes */
-        @keyframes fadeUp {
-            from {
+        @keyframes fadeUp {{
+            from {{
                 opacity: 0;
                 transform: translateY(30px);
-            }
-            to {
+            }}
+            to {{
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
+            }}
+        }}
+
+        /* Sidebar Color Tweaks */
+        [data-testid="stSidebar"] {{
+             background-color: #f8fafc !important;
+        }}
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
+            color: #1e293b !important;
+        }}
         </style>
         """,
         unsafe_allow_html=True
@@ -301,9 +319,12 @@ def login():
                     submit = st.form_submit_button("Enter", use_container_width=True)
                 
                 if submit:
-                    role = authenticate(identifier, password)
-                    if role:
-                        st.session_state["role"] = role
+                    user_data = authenticate(identifier, password)
+                    if user_data:
+                        uname, urole, utheme = user_data
+                        st.session_state["username"] = uname
+                        st.session_state["role"] = urole
+                        st.session_state["theme_color"] = utheme
                         st.rerun()
                     else:
                         st.error("Invalid credentials.")
@@ -454,9 +475,9 @@ else:
             ]
         }
         
-    if st.session_state["role"] == "admin":
-        admin_page = {"Administration Tools": [st.Page("admin_dashboard.py", title="User Console", icon="🛡️")]}
-        pages = {**admin_page, **pages}
+    # Management Section (Accessible to all roles, features restricted within the page)
+    manage_page = {"Manage App": [st.Page("admin_dashboard.py", title="App Settings", icon="⚙️")]}
+    pages = {**manage_page, **pages}
         
     pg = st.navigation(pages)
 
