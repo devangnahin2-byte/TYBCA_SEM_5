@@ -111,6 +111,29 @@ if "role" not in st.session_state:
 if "theme_color" not in st.session_state:
     st.session_state["theme_color"] = "#2563eb"
 
+# --- Global UI Cleanup ---
+if st.session_state.get("role") in [None, "student"]:
+    st.markdown("""
+        <style>
+        /* Hide Header, Toolbar, and Footer */
+        header[data-testid="stHeader"], 
+        [data-testid="stHeader"], 
+        [data-testid="stToolbar"], 
+        .stAppToolbar,
+        footer,
+        #MainMenu {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            opacity: 0 !important;
+        }
+        /* Remove top padding caused by header */
+        .block-container {
+            padding-top: 2rem !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 if "otp_state" not in st.session_state:
     st.session_state.otp_state = {
         "step": 1,
@@ -482,19 +505,5 @@ else:
         
     pg = st.navigation(pages)
 
-    # Hide 'Live' toolbar and header for students for a cleaner UI
-    if st.session_state.get("role") == "student":
-        st.markdown("""
-            <style>
-            [data-testid="stToolbar"], [data-testid="stHeader"] {
-                display: none !important;
-                visibility: hidden;
-                height: 0;
-            }
-            footer {
-                display: none !important;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-
 pg.run()
+
