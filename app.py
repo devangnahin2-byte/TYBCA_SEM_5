@@ -112,23 +112,19 @@ if "theme_color" not in st.session_state:
     st.session_state["theme_color"] = "#2563eb"
 
 # --- Global UI Cleanup ---
-if st.session_state.get("role") is "student":
+if st.session_state.get("role") is None:
     # Aggressive Cleanup for the Login/Register Page (No sidebar needed)
     st.markdown("""
         <style>
         header[data-testid="stHeader"], [data-testid="stToolbar"], footer {
             display: none !important;
         }
-        header[data-testid="stToolbarActions"]
-        {
-            display: none!important;
-        }
         .block-container {
             padding-top: 0 !important;
         }
         </style>
     """, unsafe_allow_html=True)
-elif st.session_state.get("role") == "admin":
+elif st.session_state.get("role") == "student":
     # Surgical Cleanup for Student Dashboard (Preserve sidebar toggle)
     st.markdown("""
         <style>
