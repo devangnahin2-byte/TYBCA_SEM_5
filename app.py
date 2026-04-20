@@ -128,13 +128,8 @@ elif st.session_state.get("role") == "student":
     # Surgical Cleanup for Student Dashboard (Preserve sidebar toggle)
     st.markdown("""
         <style>
-        /* Hide Deploy Button explicitly */
-        .stDeployButton, [data-testid="stCloudAppDeployButton"] {
-            display: none !important;
-        }
-        
-        /* Hide the options Menu (three dots) */
-        [data-testid="stToolbar"] {
+        /* Hide Deploy Button and Toolbar Menu */
+        .stDeployButton, [data-testid="stCloudAppDeployButton"], [data-testid="stToolbar"] {
             display: none !important;
         }
         
@@ -147,17 +142,33 @@ elif st.session_state.get("role") == "student":
         header[data-testid="stHeader"] {
             background: transparent !important;
             box-shadow: none !important;
+            z-index: 99 !important;
         }
         
-        /* Accentuate any header buttons (like the hamburger) */
-        header[data-testid="stHeader"] button {
-            background-color: rgba(255, 255, 255, 0.8) !important;
-            border-radius: 50% !important;
-            color: #0f172a !important;
+        /* BULLETPROOF SIDEBAR TOGGLE VISIBILITY */
+        [data-testid="collapsedControl"], 
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="stSidebarCollapsedControl"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 999999 !important;
+            background-color: #2563eb !important;
+            border-radius: 8px !important;
+            padding: 8px !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+            transition: all 0.3s ease;
         }
         
+        [data-testid="collapsedControl"] svg, 
+        [data-testid="stSidebarCollapseButton"] svg,
+        [data-testid="stSidebarCollapsedControl"] svg {
+            fill: #ffffff !important;
+            color: #ffffff !important;
+        }
+
         .block-container {
-            padding-top: 3rem !important;
+            padding-top: 3.5rem !important;
         }
         </style>
     """, unsafe_allow_html=True)
