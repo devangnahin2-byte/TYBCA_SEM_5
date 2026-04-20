@@ -128,34 +128,34 @@ elif st.session_state.get("role") == "student":
     # Surgical Cleanup for Student Dashboard (Preserve sidebar toggle)
     st.markdown("""
         <style>
-        /* Hide only the distracting Streamlit branding/deploy */
-        [data-testid="stCloudAppDeployButton"], 
-        .stDeployButton,
-        [data-testid="stToolbar"] button:not([data-testid="stSidebarCollapseButton"]),
+        /* Hide Deploy Button explicitly */
+        .stDeployButton, [data-testid="stCloudAppDeployButton"] {
+            display: none !important;
+        }
+        
+        /* Hide the options Menu (three dots) */
+        [data-testid="stToolbar"] {
+            display: none !important;
+        }
+        
+        /* Hide Footer */
         footer {
             display: none !important;
         }
         
-        /* Ensure the Header exists and is visible */
+        /* Keep header visible for the hamburger, but make it transparent */
         header[data-testid="stHeader"] {
-            display: flex !important;
-            visibility: visible !important;
-            background-color: transparent !important;
-            z-index: 99 !important;
-        }
-
-        /* Force the Sidebar Toggle to be visible and clickable */
-        [data-testid="stSidebarCollapseButton"] {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            color: #1e293b !important;
-            background-color: rgba(255, 255, 255, 0.5) !important;
-            border-radius: 50% !important;
-            padding: 5px !important;
+            background: transparent !important;
+            box-shadow: none !important;
         }
         
-        /* Adjust padding to avoid content overlapping header */
+        /* Accentuate any header buttons (like the hamburger) */
+        header[data-testid="stHeader"] button {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 50% !important;
+            color: #0f172a !important;
+        }
+        
         .block-container {
             padding-top: 3rem !important;
         }
