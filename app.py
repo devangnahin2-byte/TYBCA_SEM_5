@@ -153,7 +153,7 @@ elif st.session_state.get("role") == "student":
             visibility: visible !important;
             opacity: 1 !important;
             z-index: 999999 !important;
-            background-color: #ffffff !important;
+            background-color: #2563eb !important
             border-radius: 8px !important;
             padding: 8px !important;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
@@ -342,7 +342,7 @@ def login():
 
         /* Sidebar Color Tweaks */
         [data-testid="stSidebar"] {{
-             background-color: #f8fafc !important;
+             background-color: #ffffff !important;
         }}
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
             color: #1e293b !important;
