@@ -128,20 +128,36 @@ elif st.session_state.get("role") == "student":
     # Surgical Cleanup for Student Dashboard (Preserve sidebar toggle)
     st.markdown("""
         <style>
+        /* Hide only the distracting Streamlit branding/deploy */
         [data-testid="stCloudAppDeployButton"], 
         .stDeployButton,
-        [data-testid="stToolbar"],
+        [data-testid="stToolbar"] button:not([data-testid="stSidebarCollapseButton"]),
         footer {
             display: none !important;
         }
-        /* Ensure Header is visible but clean for the sidebar toggle */
+        
+        /* Ensure the Header exists and is visible */
         header[data-testid="stHeader"] {
+            display: flex !important;
             visibility: visible !important;
             background-color: transparent !important;
+            z-index: 99 !important;
         }
+
+        /* Force the Sidebar Toggle to be visible and clickable */
         [data-testid="stSidebarCollapseButton"] {
+            display: flex !important;
             visibility: visible !important;
+            opacity: 1 !important;
             color: #1e293b !important;
+            background-color: rgba(255, 255, 255, 0.5) !important;
+            border-radius: 50% !important;
+            padding: 5px !important;
+        }
+        
+        /* Adjust padding to avoid content overlapping header */
+        .block-container {
+            padding-top: 3rem !important;
         }
         </style>
     """, unsafe_allow_html=True)
