@@ -153,7 +153,7 @@ elif st.session_state.get("role") == "student":
             visibility: visible !important;
             opacity: 1 !important;
             z-index: 999999 !important;
-            background-color: #2563eb !important;
+            background-color: #ffffff !important;
             border-radius: 8px !important;
             padding: 8px !important;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
